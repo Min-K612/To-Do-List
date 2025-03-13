@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ToDoListApplication.Data;
 using ToDoListApplication.Models;
+using ToDoListApplication.Service;
 
 namespace ToDoListApplication
 {
@@ -26,6 +27,8 @@ namespace ToDoListApplication
 
             }).AddEntityFrameworkStores<AppDdContext>()
               .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<ValidationService>();
 
             var app = builder.Build();
 

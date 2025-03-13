@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ToDoListApplication.Data;
 using ToDoListApplication.Models;
+using ToDoListApplication.Service;
 using ToDoListApplication.ViewModels;
 
 namespace ToDoListApplication.Controllers
@@ -10,11 +11,13 @@ namespace ToDoListApplication.Controllers
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly ValidationService _validationService;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ValidationService validationService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _validationService = validationService;
         }
 
         public IActionResult Login()
@@ -52,6 +55,13 @@ namespace ToDoListApplication.Controllers
         {
             if (ModelState.IsValid)
             {
+                var isValidUserName = _validationService.IsValidInput(model.Name);
+                if (!isValidUserName)
+                {
+                    ModelState.AddModelError("", "Special characters aren't allowed to be part of name.");
+                    return View(model);
+                }
+
                 var user = new User
                 {
                     FullName = model.Name,
