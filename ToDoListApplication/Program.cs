@@ -1,3 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using ToDoListApplication.Data;
+using ToDoListApplication.Models;
+
 namespace ToDoListApplication
 {
     public class Program
@@ -8,6 +13,19 @@ namespace ToDoListApplication
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<AppDdContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddIdentity<User, IdentityRole>(option =>
+            {
+                option.Password.RequireDigit = false;
+                option.Password.RequireLowercase = false;
+                option.Password.RequireUppercase = false;
+                option.Password.RequireNonAlphanumeric = false;
+                option.Password.RequiredLength = 6;
+
+            }).AddEntityFrameworkStores<AppDdContext>()
+              .AddDefaultTokenProviders();
 
             var app = builder.Build();
 
