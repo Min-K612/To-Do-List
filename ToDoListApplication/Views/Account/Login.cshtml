@@ -27,7 +27,7 @@
             </div>
 
             <div class="float-end">
-                <a asp-controller="Account" asp-action="VerifyEmail" class="text-decoration-none">
+                <a asp-controller="Account" asp-action="VerifyEmail" class="text-decoration-none text-danger">
                     Forget Password?
                 </a>
             </div>
@@ -39,13 +39,10 @@
             </div>
 
 
-            <input type="submit" value="Login" class="btn btn-outline-success w-100 p-2" />
+            <input type="submit" value="Login" class="btn btn-primary w-100 p-2" />
             <p class="text-center mt-2">
                 Don't have an account? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
             </p>
-            <div class="text-center mt-1">
-                <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
-            </div>
 
         </form>
     </div>

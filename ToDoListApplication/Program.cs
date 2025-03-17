@@ -30,6 +30,12 @@ namespace ToDoListApplication
 
             builder.Services.AddScoped<ValidationService>();
 
+            //builder.Services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.AccessDeniedPath = "/Account/AccessDenied"; 
+            //});
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -39,7 +45,6 @@ namespace ToDoListApplication
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -49,9 +54,11 @@ namespace ToDoListApplication
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.Run();
         }
     }
+
+    
 }

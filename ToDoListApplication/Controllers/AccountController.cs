@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using ToDoListApplication.Data;
 using ToDoListApplication.Models;
 using ToDoListApplication.Service;
@@ -12,12 +14,15 @@ namespace ToDoListApplication.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ValidationService _validationService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ValidationService validationService)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ValidationService validationService,
+            RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _validationService = validationService;
+            _roleManager = roleManager;
         }
 
         public IActionResult Login()
@@ -34,6 +39,7 @@ namespace ToDoListApplication.Controllers
 
                 if (result.Succeeded)
                 {
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -55,7 +61,7 @@ namespace ToDoListApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                var isValidUserName = _validationService.IsValidInput(model.Name);
+                var isValidUserName = _validationService.IsValidInput(model.Name, " ");
                 if (!isValidUserName)
                 {
                     ModelState.AddModelError("", "Special characters aren't allowed to be part of name.");
@@ -73,6 +79,17 @@ namespace ToDoListApplication.Controllers
 
                 if (result.Succeeded)
                 {
+                    string roleName = "User";
+
+                    var roleExists = await _roleManager.RoleExistsAsync(roleName);
+
+                    if (!roleExists)
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(roleName));
+                    }
+
+                    await _userManager.AddToRoleAsync(user, roleName);
+
                     return RedirectToAction("Login", "Account");
                 }
                 else
@@ -151,7 +168,13 @@ namespace ToDoListApplication.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
     }
 }
